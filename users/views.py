@@ -1,5 +1,6 @@
 import uuid
 
+from django.http import JsonResponse
 from rest_framework.views import APIView
 from rest_framework.exceptions import AuthenticationFailed
 import jwt, datetime
@@ -131,3 +132,16 @@ class ExitSiteView(APIView):
             'message': 'success'
         }
         return response
+
+
+# 사용자 정보 조회 (전체 리스트)
+class GetUserListView(APIView):
+    def get(self, request):
+        return JsonResponse(User.objects.all())
+
+
+# 사용자 정보 조회 (단건 조회)
+class GetUserInfoByName(APIView):
+    def get(self, request):
+        username = request.GET['name']
+        return User.objects.filter(name=username)
