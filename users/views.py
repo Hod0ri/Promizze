@@ -1,3 +1,4 @@
+import json
 import uuid
 
 from django.http import JsonResponse
@@ -7,6 +8,7 @@ import jwt, datetime
 from .models import User
 from .serializers import UserSerializer
 from rest_framework.response import Response
+from django.core.serializers import serialize
 
 
 # Check Validation Token
@@ -137,11 +139,17 @@ class ExitSiteView(APIView):
 # 사용자 정보 조회 (전체 리스트)
 class GetUserListView(APIView):
     def get(self, request):
-        return JsonResponse(User.objects.all())
+        origin_UserList = User.objects.all()
+        serializedList = serialize("json", origin_UserList)
+        serializedList = json.loads(serializedList)
+        return JsonResponse(serializedList, safe=False)
 
 
 # 사용자 정보 조회 (단건 조회)
 class GetUserInfoByName(APIView):
     def get(self, request):
         username = request.GET['name']
-        return User.objects.filter(name=username)
+        selectedUser = User.objects.filter(name=username)
+        serializedUser = serialize("json", selectedUser)
+        serializedUser = json.loads(serializedUser)
+        return JsonResponse(serializedUser, safe=False)
